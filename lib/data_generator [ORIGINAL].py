@@ -294,9 +294,7 @@ class TimeSeriesDataGenerator(DataGenerator):
         self.DATA_PATH = os.path.join(self.DIRECTORY,
                                       para.data_set + str(self.h))
         create_dir(self.DATA_PATH)
-        # self._download_file()
-        self.out_fn = os.path.join(self.DATA_PATH,
-                                   self.para.data_set + ".csv")
+        self._download_file()
         self.split = [0, 0.6, 0.8, 1]
         self.split_names = ["train", "validation", "test"]
         self._preprocess(para)
@@ -312,7 +310,7 @@ class TimeSeriesDataGenerator(DataGenerator):
         else:
             url += "{}.txt.gz?raw=true".format(self.para.data_set)
         self.out_fn = os.path.join(self.DATA_PATH,
-                                   self.para.data_set + ".csv")    #.gz")
+                                   self.para.data_set + ".txt.gz")
         download_file(url, self.out_fn)
 
     def _preprocess(self, para):

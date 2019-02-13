@@ -47,13 +47,12 @@ def train(para, sess, model, train_data_generator):
                 try:
                     [loss, outputs, labels] = valid_sess.run(fetches=[
                         valid_model.loss,
-                        valid_model.all_rnn_outputs[:, 0],
+                        valid_model.all_rnn_outputs,
                         valid_model.labels,
                     ])
-                    # print("outputs shape:", outputs.shape, "labels shape:", labels.shape)
                     if para.mts:
                         valid_rse += np.sum(
-                            ((outputs - labels) * valid_data_generator.scale[0])
+                            ((outputs - labels) * valid_data_generator.scale)
                             **2)
                         all_outputs.append(outputs)
                         all_labels.append(labels)

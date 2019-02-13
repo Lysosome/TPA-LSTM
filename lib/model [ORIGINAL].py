@@ -61,11 +61,11 @@ class PolyRNN:
             self.all_rnn_outputs += tf.squeeze(reg_outputs)
 
         if self.para.mode == "train" or self.para.mode == "validation":
-            self.labels = self.target_outputs[:, self.para.max_len - 1, 0]
+            self.labels = self.target_outputs[:, self.para.max_len - 1, :]
             self.loss = self._compute_loss(
-                outputs=self.all_rnn_outputs[:, 0], labels=self.labels)
+                outputs=self.all_rnn_outputs, labels=self.labels)
         elif self.para.mode == "test":
-            self.labels = self.target_outputs[:, self.para.max_len - 1, 0]
+            self.labels = self.target_outputs[:, self.para.max_len - 1, :]
             if not self.para.mts:
                 self.all_rnn_outputs = tf.sigmoid(self.all_rnn_outputs)
 

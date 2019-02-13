@@ -15,13 +15,13 @@ def test(para, sess, model, data_generator):
         try:
             [outputs, labels] = sess.run(
                 fetches=[
-                    model.all_rnn_outputs[:, 0],
+                    model.all_rnn_outputs,
                     model.labels
                 ]
             )
             if para.mts:
                 test_rse += np.sum(
-                    ((outputs - labels) * data_generator.scale[0]) ** 2
+                    ((outputs - labels) * data_generator.scale) ** 2
                 )
                 all_outputs.append(outputs)
                 all_labels.append(labels)
