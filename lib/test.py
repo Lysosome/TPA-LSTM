@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
+import traceback
 
 def test(para, sess, model, data_generator):
     sess.run(data_generator.iterator.initializer)
@@ -23,6 +24,8 @@ def test(para, sess, model, data_generator):
     # alphas and var_weights for EVERY batch
     all_alphas = []
     all_var_weights = []
+
+    at_least_one_result = False
 
     while True:
         try:
@@ -78,8 +81,11 @@ def test(para, sess, model, data_generator):
                             fn += 1
             count += 1
             n_samples += np.prod(outputs.shape)
+            at_least_one_result = True
         except Exception as e:
-            # print("Exception:", e)
+            if(not at_least_one_result):
+                print("Exception:", e)
+                traceback.print_exc()
             break
     if para.mts:
         all_outputs = np.concatenate(all_outputs)
