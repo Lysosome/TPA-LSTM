@@ -297,8 +297,12 @@ class TimeSeriesDataGenerator(DataGenerator):
         # self._download_file()
         self.out_fn = os.path.join(self.DATA_PATH,
                                    self.para.data_set + ".csv")
-        self.split = [0, 0.6, 0.8, 1]
-        self.split_names = ["train", "validation", "test"]
+        if para.test_set_at_beginning:
+            self.split = [0, 0.6, 0.8, 1]
+            self.split_names = ["train", "validation", "test"]
+        else:
+            self.split = [0, 0.2, 0.8, 1]
+            self.split_names = ["test", "train", "validation"]
         self._preprocess(para)
         del self.raw_dat, self.dat
 

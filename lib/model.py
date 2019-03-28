@@ -30,7 +30,8 @@ class PolyRNN:
 
         # rnn_inputs_embed: [batch_size, max_len, num_units]
         self.rnn_inputs_embed = tf.nn.relu(
-            dense(self.rnn_inputs, self.para.num_units))
+            dense(self.rnn_inputs, self.para.num_units)) # [BEN MA]: weights name: 'model/dense/kernel:0', shape=(75, 32)
+                                                        # with 1 unit and 15 features, shape=(15, 1)
 
         # all_rnn_states: [batch_size, max_len, num_units]
         # final_rnn_states: [LSTMStateTuple], len = num_layers
@@ -38,7 +39,7 @@ class PolyRNN:
         #                  h: [batch_size, num_units])
         self.rnn_inputs_embed = tf.unstack(self.rnn_inputs_embed, axis=1)
         self.all_rnn_states, self.final_rnn_states = tf.nn.static_rnn(
-            cell=self._build_rnn_cell(),
+            cell=self._build_rnn_cell(), # [BEN MA]: _build_rnn_cell() calls _build_single_cell() num_layers times
             inputs=self.rnn_inputs_embed,
             sequence_length=self.rnn_inputs_len,
             dtype=self.dtype,
@@ -50,15 +51,20 @@ class PolyRNN:
             1,
         )
 
-        # all_rnn_outputs: [batch_size, output_size]
-        self.all_rnn_outputs = dense(self.final_rnn_states,
-                                     self.para.output_size)
+        # self.final_rnn_states = tf.multiply(0.0, self.final_rnn_states)
 
+        # all_rnn_outputs: [batch_size, output_size]
+        self.all_rnn_outputs_pre_reg = dense(self.final_rnn_states,
+                                     self.para.output_size) # [BEN MA]: weights name: 'model/dense_1/kernel:0', shape=(96, 75)
+        # self.all_rnn_outputs = tf.multiply(0.0, self.all_rnn_outputs, name="ben_multiply")
         if self.para.highway > 0:
+            # (After Transpose) reg_outputs: [batch_size, input_size (num features), highway]
             reg_outputs = tf.transpose(
                 self.rnn_inputs[:, -self.para.highway:, :], [0, 2, 1])
-            reg_outputs = dense(reg_outputs, 1)
-            self.all_rnn_outputs += tf.squeeze(reg_outputs)
+            reg_outputs = dense(reg_outputs, 1) # [BEN MA]: weights name: 'model/dense_2/kernel:0', shape=(20, 1)
+            self.reg_outputs = tf.squeeze(reg_outputs)
+            # (After Squeeze) reg_outputs: [batch_size, input_size (num features)]
+            self.all_rnn_outputs = self.all_rnn_outputs_pre_reg + tf.squeeze(reg_outputs) # [BEN MA]: Uncomment to put reg_outputs back in
 
         if self.para.mode == "train" or self.para.mode == "validation":
             self.labels = self.target_outputs[:, self.para.max_len - 1, 0]

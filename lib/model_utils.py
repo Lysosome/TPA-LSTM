@@ -30,6 +30,18 @@ def create_graph(para):
             model = PolyRNN(para, data_generator)
     return graph, model, data_generator
 
+# [BEN MA]: does same as normal create_graph but does NOT create a data generator
+# doesn't really work... oops
+def create_graph_weight_extraction(para):
+    graph = tf.Graph()
+    with graph.as_default():
+        initializer = tf.random_uniform_initializer(-para.init_weight,
+                                                    para.init_weight)
+        data_generator = None
+        with tf.variable_scope('model', initializer=initializer):
+            model = PolyRNN(para, data_generator)
+    return graph, model, data_generator
+
 
 def create_valid_graph(para):
     valid_para = deepcopy(para)
