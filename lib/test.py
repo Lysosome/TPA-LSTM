@@ -37,20 +37,20 @@ def test(para, sess, model, data_generator):
             fetchList = [model.all_rnn_outputs[:, 0], model.labels]
 
             fetchList2 = [model.all_rnn_outputs_pre_reg, model.reg_outputs]
-            fetchList.extend(fetchList2)
+            # fetchList.extend(fetchList2)
 
-            fetchList.extend(alphaNames)
+            # fetchList.extend(alphaNames)
             results = sess.run( fetches=fetchList )
 
             outputs = results[0]
             labels = results[1]
 
             # each alpha shape: [BATCH_SIZE, EMBED_SIZE]
-            alphas = results[2:]
-            var_weights = []
-
-            pre_reg = results[2]
-            reg = results[3]
+            # alphas = results[2:]
+            # var_weights = []
+            #
+            # pre_reg = results[2]
+            # reg = results[3]
             # print("pre_reg (attention) outputs:", pre_reg[0][0] * data_generator.scale[0])
             # print("reg outputs:", reg[0][0] * data_generator.scale[0])
             # print("labels:", labels[0] * data_generator.scale[0])
